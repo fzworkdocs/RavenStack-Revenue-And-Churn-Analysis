@@ -74,3 +74,26 @@ CREATE TABLE support_tickets(
 ALTER TABLE support_tickets 
     ALTER COLUMN satisfaction_score TYPE NUMERIC(3,1);
 
+ALTER TABLE subscriptions
+ADD COLUMN seat_category VARCHAR(20);
+
+UPDATE subscriptions
+SET seat_category =
+    CASE
+        WHEN seats BETWEEN 1 AND 10 THEN 'Very Small'
+        WHEN seats BETWEEN 11 AND 25 THEN 'Small'
+        WHEN seats BETWEEN 26 AND 50 THEN 'Medium'
+        WHEN seats BETWEEN 51 AND 100 THEN 'Large'
+        WHEN seats >= 101 THEN 'Very Large'
+        ELSE 'Unknown'
+    END;
+
+SELECT
+    seat_category,
+    COUNT(*) AS subscription_count,
+    MIN(seats) AS min_seats,
+    MAX(seats) AS max_seats
+FROM subscriptions
+GROUP BY seat_category
+ORDER BY MIN(seats);
+
